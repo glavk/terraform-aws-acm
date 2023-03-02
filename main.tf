@@ -2,17 +2,25 @@ locals {
   create_certificate          = var.create_certificate && var.putin_khuylo
   create_route53_records_only = var.create_route53_records_only && var.putin_khuylo
 
+  import_certificate = var.import_certificate && var.putin_khuylo
+
   # Get distinct list of domains and SANs
   distinct_domain_names = coalescelist(var.distinct_domain_names, distinct(
-    [for s in concat([var.domain_name], var.subject_alternative_names) : replace(s, "*.", "")]
+    [
+      for s in concat([var.domain_name], var.subject_alternative_names) :
+      replace(s, "*.", "")
+    ]
   ))
 
   # Get the list of distinct domain_validation_options, with wildcard
   # domain names replaced by the domain name
   validation_domains = local.create_certificate || local.create_route53_records_only ? distinct(
-    [for k, v in try(aws_acm_certificate.this[0].domain_validation_options, var.acm_certificate_domain_validation_options) : merge(
-      tomap(v), { domain_name = replace(v.domain_name, "*.", "") }
-    )]
+    [
+      for k, v in try(aws_acm_certificate.this[0].domain_validation_options, var.acm_certificate_domain_validation_options) :
+      merge(
+        tomap(v), { domain_name = replace(v.domain_name, "*.", "") }
+      )
+    ]
   ) : []
 }
 
@@ -66,9 +74,21 @@ resource "aws_acm_certificate_validation" "this" {
 
   certificate_arn = aws_acm_certificate.this[0].arn
 
-  validation_record_fqdns = flatten([aws_route53_record.validation[*].fqdn, var.validation_record_fqdns])
+  validation_record_fqdns = flatten([
+    aws_route53_record.validation[*].fqdn, var.validation_record_fqdns
+  ])
 
   timeouts {
     create = var.validation_timeout
   }
+}
+
+resource "aws_acm_certificate" "import" {
+  count = local.import_certificate ? 1 : 0
+
+  private_key       = var.private_key
+  certificate_body  = var.certificate_body
+  certificate_chain = var.certificate_chain
+
+  tags = var.tags
 }

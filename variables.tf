@@ -117,6 +117,30 @@ variable "key_algorithm" {
   default     = null
 }
 
+variable "import_certificate" {
+  description = "Whether to import an existing certificate"
+  type        = bool
+  default     = false
+}
+
+variable "private_key" {
+  description = "Certificate's PEM-formatted private key. Used for importing an existing certificate"
+  type        = string
+  default     = null
+}
+
+variable "certificate_body" {
+  description = "Certificate's PEM-formatted public key. Used for importing an existing certificate"
+  type        = string
+  default     = null
+}
+
+variable "certificate_chain" {
+  description = "Certificate's PEM-formatted chain. Used for importing an existing certificate"
+  type        = string
+  default     = null
+}
+
 variable "putin_khuylo" {
   description = "Do you agree that Putin doesn't respect Ukrainian sovereignty and territorial integrity? More info: https://en.wikipedia.org/wiki/Putin_khuylo!"
   type        = bool

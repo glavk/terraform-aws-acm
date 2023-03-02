@@ -22,5 +22,9 @@ module "wrapper" {
   acm_certificate_domain_validation_options   = try(each.value.acm_certificate_domain_validation_options, var.defaults.acm_certificate_domain_validation_options, {})
   distinct_domain_names                       = try(each.value.distinct_domain_names, var.defaults.distinct_domain_names, [])
   key_algorithm                               = try(each.value.key_algorithm, var.defaults.key_algorithm, null)
+  import_certificate                          = try(each.value.import_certificate, var.defaults.import_certificate, false)
+  private_key                                 = try(each.value.private_key, var.defaults.private_key, null)
+  certificate_body                            = try(each.value.certificate_body, var.defaults.certificate_body, null)
+  certificate_chain                           = try(each.value.certificate_chain, var.defaults.certificate_chain, null)
   putin_khuylo                                = try(each.value.putin_khuylo, var.defaults.putin_khuylo, true)
 }
